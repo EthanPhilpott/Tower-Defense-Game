@@ -1,0 +1,68 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Variables */
+
+    /* Colors */
+    /* Stolen From
+        https://coolors.co/023b79-002855-001845-001233-25272d-1d1d20-131415
+    */
+
+    /* Blacks */
+    --black     : #131415;
+    --charcoal  : #1d1d20;
+    --gray      : #25272d;
+
+    /* Blues */
+    --dark-blue : #001233;
+    --royal-blue: #001845;
+    --blue      : #002855;
+    --light-blue: #023b79;
+
+    /* Whites */
+    --white     : #ffffff;
+}
+
+/* Common */
+
+body {
+    background-color: var(--black);
+}
+
+ul, ol {
+    list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Heebo', sans-serif;
+}
+
+/* Header */
+
+header {
+    display: flex;
+    padding: 5px;
+    background-color: var(--light-blue);
+}
+
+header .title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+header .logo {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: var(--light-blue);
+    border: solid var(--royal-blue) 2px;
+}
+
+header h1 {
+    font-size: 25px;
+}
