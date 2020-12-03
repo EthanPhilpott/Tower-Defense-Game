@@ -1,0 +1,48 @@
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Variables */
+}
+
+/* Main Styles */
+
+article {
+    display: flex;
+}
+
+/* board classes */
+
+.board {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
+}
+
+.board * {
+    width: 100px;
+    height: 100px;
+}
+
+.empty-cell {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.enemy-spawn-cell {
+    background-color: purple;
+}
+
+.player-base-cell {
+    background-color: blue;
+}
+
+.tower-cell {
+    background-color: gray;
+}
+
+.path-cell {
+    background-color: darkgray;
+}
