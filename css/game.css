@@ -10,6 +10,11 @@
 
 /* Main Styles */
 
+body {
+    background-color: rgb(25, 23, 26);
+    overflow: hidden;
+}
+
 article {
     display: flex;
 }
@@ -20,6 +25,7 @@ article {
     display: grid;
     grid-template-columns: auto;
     grid-template-rows: auto;
+    position: absolute;
 }
 
 .board * {
@@ -40,9 +46,9 @@ article {
 }
 
 .tower-cell {
-    background-color: gray;
+    background-color: #6F6F75;
 }
 
 .path-cell {
-    background-color: darkgray;
+    background-color: #3F4242;
 }

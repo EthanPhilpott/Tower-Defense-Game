@@ -1,29 +1,44 @@
 "use strict"
 
+// Consts
+
+const roundAmt          = '15px';
+const sheenShadowBorder = 'solid 5px';
+const CameraSpeed       = 10
+
 // All global HTML Elements
 let boardHTML = document.getElementById('board');
 
 // The following is a very basic board and is named acordingly.
 let classicSmall = {
     map : [
-        [ 0 ,  0 ,  1 ,  1 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
-        ['s', 'p', 'p', 'p',  0 ], // 1 stands for a spot that towers can be placed on.
-        [ 0 ,  1 ,  1 , 'p',  1 ], // s stands for the enemy spawing spot
-        [ 0 , 'p', 'p', 'p',  1 ], // b stands for your base, if an enemy reaches here you lose life.
-        [ 1 , 'p',  1 ,  1 ,  1 ], // p stands for the path the enemy takes, this can be placed anywhere and the enemy will pathfind the best path towards the nearest base.
-        [ 1 , 'p', 'p', 'p', 'b'], 
-        [ 0 ,  0 ,  1 ,  1 ,  0 ], 
+        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
+        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 ,  0 ,  0 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
+        [ 0 ,  0 , 's', 'p', 'p', 'p', 'p',  0 ,  0 ], // 1 stands for a spot that towers can be placed on.
+        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 , 'p',  1 ,  0 ], // s stands for the enemy spawing spot
+        [ 0 ,  0 , 'p', 'p', 'p', 'p', 'p',  1 ,  0 ], // b stands for your base, if an enemy reaches here you lose life.
+        [ 0 ,  0 , 'p',  1 ,  1,   1 ,  0 ,  0 ,  0 ], 
+        [ 0 ,  1 , 'p', 'p', 'p', 'p', 'b',  0 ,  0 ],
+        [ 0 ,  1 ,  1 ,  0 ,  1 ,  1 ,  0 ,  0 ,  0 ],
+        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ]
     ],
 
     waves : [
         [
             ["basic", 1, 1]
-        ]
+        ],
         [
             ["basic", 3, 1]
         ],
     ]
 }
+
+// ██████╗░░█████╗░░█████╗░██████╗░██████╗░
+// ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔══██╗
+// ██████╦╝██║░░██║███████║██████╔╝██║░░██║
+// ██╔══██╗██║░░██║██╔══██║██╔══██╗██║░░██║
+// ██████╦╝╚█████╔╝██║░░██║██║░░██║██████╔╝
+// ╚═════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░
 
 class Board {
     constructor (boardHTML, boardArray) {
@@ -50,12 +65,16 @@ class Board {
                         break;
                     case 1: // 1 = a place a tower can be placed
                         tempdiv.classList.add('tower-cell')
+                        this.CheckConners(x, y, tempdiv);
+                        this.AddSheen(x, y, tempdiv, 1, '#BFBFC9', '#4A4A4B');
                         break;
                     case 's': // 's' = the enemy spawn location
                         tempdiv.classList.add('enemy-spawn-cell')
                         break;
                     case 'p': // 'p' = the path the enemies can take
                         tempdiv.classList.add('path-cell')
+                        this.CheckConners(x, y, tempdiv);
+                        this.AddSheen(x, y, tempdiv, 'p', '#4E5252', '#343636');
                         break;
                     case 'b': // 'b' = the players base
                         tempdiv.classList.add('player-base-cell')
@@ -63,23 +82,119 @@ class Board {
                     default: // if the tile is not contained in the switch statement, warn.
                         console.warn('No found tile for given board')
                 }
-
+                
                 // For every tempdiv, append it to the board container.
                 this.board.appendChild(tempdiv)
             }
         }
     }
-}
 
-function PathFinding (board) {
-    spawns = [];
-    for (let row = 0; row < board.length; row++) {
-        for (let col = 0; col < board[row].length; col++) {
-            if (board[row][col] === 's') {
-                spawns.push([row, col])
-            }
-        }
+    CheckConners (x, y, elem) { // the x,y of the element and the elements html
+        let round = [ // round checks surrounding squares. -1 means one row or col backwards, 0 means no rows or cols backward, 1 means one row or col forwards
+            [
+                [ [-1,  0], [-1, -1], [ 0, -1] ],
+                [ [ 0, -1], [ 1, -1], [ 1,  0] ],
+                [ [ 1,  0], [ 1,  1], [ 0,  1] ],
+                [ [ 0,  1], [-1,  1], [-1,  0] ] 
+            ]
+        ]
+
+        let isEmpty; // isEmpty is true unless a non-emppty space is found around the [x, y] of the permatiters
+        for (let type of round) { // For both sets in rounds
+            for (let set of type) { // for each of the diffrent sets in the round type
+                isEmpty = true; // resets empty to true for each set
+                for (let cords of set) { // each of the indivual cordinates in set
+                    if (this.array[y + cords[1]][x + cords[0]] !== 0) { // based on where the x,y is then find it plus the cords and if that position on the board is not a zero
+                        isEmpty = false; // sets isEmpty to false
+                        break; // And breaks so it doesn't run anymore
+                    }
+                }
+                if (isEmpty) { // if all the spots are empty meaning we can round the conners
+                    for (let cords of set) { // for each of the ccrdinates in set
+                        if (!cords.includes(0)) { // if it includes a 0, meaning it ins't a conner
+                            if (cords[0] === -1) { // if cords starts with a -1
+                                if (cords[1] === 1) { // if cords ends with a 1
+                                    elem.style.borderBottomLeftRadius = roundAmt;
+                                } else { // if cords ends with a -1
+                                    elem.style.borderTopLeftRadius = roundAmt;
+                                }
+                            } else { // if cords starts with a 1
+                                if (cords[1] === 1) { // if cords ends with a 1
+                                    elem.style.borderBottomRightRadius = roundAmt;
+                                } else { // if cords ends with a -1
+                                    elem.style.borderTopRightRadius = roundAmt;
+                                } // look
+                            } // at
+                        } // all
+                    } // these
+                } // curly
+            } // brakets
+        } // thats
+    } // crazy
+
+    AddSheen (x, y, elem, lookFor, sheen, shadow) {
+        if (!(this.array[y][x - 1] === lookFor)) elem.style.borderLeft   = sheenShadowBorder + sheen;
+        if (!(this.array[y - 1][x] === lookFor)) elem.style.borderTop    = sheenShadowBorder + sheen;
+        if (!(this.array[y + 1][x] === lookFor)) elem.style.borderBottom = sheenShadowBorder + shadow;
+        if (!(this.array[y][x + 1] === lookFor)) elem.style.borderRight  = sheenShadowBorder + shadow;
     }
 }
 
 let board = new Board (boardHTML, classicSmall.map)
+
+// ░█████╗░░█████╗░███╗░░░███╗███████╗██████╗░░█████╗░
+// ██╔══██╗██╔══██╗████╗░████║██╔════╝██╔══██╗██╔══██╗
+// ██║░░╚═╝███████║██╔████╔██║█████╗░░██████╔╝███████║
+// ██║░░██╗██╔══██║██║╚██╔╝██║██╔══╝░░██╔══██╗██╔══██║
+// ╚█████╔╝██║░░██║██║░╚═╝░██║███████╗██║░░██║██║░░██║
+// ░╚════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚═╝░░╚═╝╚═╝░░╚═╝
+
+window.addEventListener('resize', () => {
+    boardHTML.style.top  = '0'
+    boardHTML.style.left = '0'
+})
+
+class Camera {
+    constructor (boardHTML, boardArray) {
+        this.board = boardHTML;
+        this.array = boardArray;
+        this.width =  boardHTML.offsetWidth;
+        this.height = boardHTML.offsetHeight;
+        this.scale = 1;
+
+        this.Keys();
+    }
+
+    Keys () {
+        let press = []
+
+        window.addEventListener('keydown', (e) => {
+            if (!press.includes(e.key)) {
+                press.push(e.key);
+            }
+            if (press.includes('w') && Number(this.board.style.top.replace('px', '')) > 0 - this.height / this.array.length) {
+                this.board.style.top  = Number(this.board.style.top.replace('px', '')) - 10 + 'px' 
+            } else if (press.includes('s') && Number(this.board.style.top.replace('px', '')) < window.innerHeight - this.height + this.height / this.array.length) {
+                this.board.style.top  = Number(this.board.style.top.replace('px', '')) + 10 + 'px' 
+            }    
+            if (press.includes('a') && Number(this.board.style.left.replace('px', '')) > 0 - this.width / this.array[0].length) {
+                this.board.style.left = Number(this.board.style.left.replace('px', '')) - 10 + 'px';
+            } else if (press.includes('d') && Number(this.board.style.left.replace('px', '')) < window.innerWidth - this.width + this.width / this.array[0].length) {
+                this.board.style.left = Number(this.board.style.left.replace('px', '')) + 10 + 'px';
+            }
+            if (press.includes('q') && this.scale < 2) {
+                this.board.style.transform = `scale(${this.scale}, ${this.scale})`
+                this.scale += 0.1;
+            } else if (press.includes('e') && this.scale > 0.5) {
+                this.board.style.transform = `scale(${this.scale}, ${this.scale})`
+                this.scale -= 0.1;
+            }
+        })
+
+        window.addEventListener('keyup', (e) => {
+            press.splice(press.indexOf(e.key), 1);
+        })
+    }
+}
+
+let camera = new Camera (boardHTML, classicSmall.map);
