@@ -6,6 +6,19 @@
 
 :root {
     /* Variables */
+    
+    /* Colors */
+    --tower-sheen       : #BFBFC9;
+    --tower-shadow      : #4A4A4B;
+    --tower-background  : #6F6F75;
+    
+    --path-sheen        : #4E5252;
+    --path-shadow       : #343636;
+    --path-background   : #3F4242;
+
+    /* Border */
+    --cell-round-amount : 15px;
+    --cell-border       : solid 5px;
 }
 
 /* Main Styles */

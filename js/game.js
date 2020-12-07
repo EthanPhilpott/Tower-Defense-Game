@@ -1,26 +1,51 @@
 "use strict"
 
-// Consts
+// ░█████╗░░█████╗░███╗░░██╗░██████╗████████╗░██████╗
+// ██╔══██╗██╔══██╗████╗░██║██╔════╝╚══██╔══╝██╔════╝
+// ██║░░╚═╝██║░░██║██╔██╗██║╚█████╗░░░░██║░░░╚█████╗░
+// ██║░░██╗██║░░██║██║╚████║░╚═══██╗░░░██║░░░░╚═══██╗
+// ╚█████╔╝╚█████╔╝██║░╚███║██████╔╝░░░██║░░░██████╔╝
+// ░╚════╝░░╚════╝░╚═╝░░╚══╝╚═════╝░░░░╚═╝░░░╚═════╝░
 
-const roundAmt          = '15px';
-const sheenShadowBorder = 'solid 5px';
-const CameraSpeed       = 10
+let root = getComputedStyle(document.documentElement)
 
-// All global HTML Elements
+// Borders
+
+const roundAmt          = root.getPropertyValue('--cell-round-amount');
+const sheenShadowBorder = root.getPropertyValue('--cell-border'      )
+
+// Colors
+
+const towerSheen  = root.getPropertyValue('--tower-sheen'     );
+const towerShadow = root.getPropertyValue('--tower-shadow'    );
+const pathSheen   = root.getPropertyValue('--path-sheen'      );
+const pathShadow  = root.getPropertyValue('--path-shadow'     );
+
+// Other
+
+const cameraSpeed       =  10
+const zoomMin           = .25
+const zoomMax           =   2
+
+// ██████╗░░█████╗░░█████╗░██████╗░██████╗░
+// ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔══██╗
+// ██████╦╝██║░░██║███████║██████╔╝██║░░██║
+// ██╔══██╗██║░░██║██╔══██║██╔══██╗██║░░██║
+// ██████╦╝╚█████╔╝██║░░██║██║░░██║██████╔╝
+// ╚═════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░
+
 let boardHTML = document.getElementById('board');
 
 // The following is a very basic board and is named acordingly.
 let classicSmall = {
     map : [
-        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
-        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 ,  0 ,  0 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
-        [ 0 ,  0 , 's', 'p', 'p', 'p', 'p',  0 ,  0 ], // 1 stands for a spot that towers can be placed on.
-        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 , 'p',  1 ,  0 ], // s stands for the enemy spawing spot
-        [ 0 ,  0 , 'p', 'p', 'p', 'p', 'p',  1 ,  0 ], // b stands for your base, if an enemy reaches here you lose life.
-        [ 0 ,  0 , 'p',  1 ,  1,   1 ,  0 ,  0 ,  0 ], 
-        [ 0 ,  1 , 'p', 'p', 'p', 'p', 'b',  0 ,  0 ],
-        [ 0 ,  1 ,  1 ,  0 ,  1 ,  1 ,  0 ,  0 ,  0 ],
-        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ]
+        [ 0 ,  0 ,  1 ,  1 ,  1 ,  0 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
+        [ 0 , 's', 'p', 'p', 'p', 'p',  0 ], // 1 stands for a spot that towers can be placed on.
+        [ 0 ,  0 ,  1 ,  1 ,  1 , 'p',  1 ], // s stands for the enemy spawing spot
+        [ 0 , 'p', 'p', 'p', 'p', 'p',  1 ], // b stands for your base, if an enemy reaches here you lose life.
+        [ 0 , 'p',  1 ,  1,   1 ,  0 ,  0 ], 
+        [ 1 , 'p', 'p', 'p', 'p', 'b',  0 ],
+        [ 1 ,  1 ,  0 ,  1 ,  1 ,  0 ,  0 ],
     ],
 
     waves : [
@@ -32,13 +57,6 @@ let classicSmall = {
         ],
     ]
 }
-
-// ██████╗░░█████╗░░█████╗░██████╗░██████╗░
-// ██╔══██╗██╔══██╗██╔══██╗██╔══██╗██╔══██╗
-// ██████╦╝██║░░██║███████║██████╔╝██║░░██║
-// ██╔══██╗██║░░██║██╔══██║██╔══██╗██║░░██║
-// ██████╦╝╚█████╔╝██║░░██║██║░░██║██████╔╝
-// ╚═════╝░░╚════╝░╚═╝░░╚═╝╚═╝░░╚═╝╚═════╝░
 
 class Board {
     constructor (boardHTML, boardArray) {
@@ -66,7 +84,7 @@ class Board {
                     case 1: // 1 = a place a tower can be placed
                         tempdiv.classList.add('tower-cell')
                         this.CheckConners(x, y, tempdiv);
-                        this.AddSheen(x, y, tempdiv, 1, '#BFBFC9', '#4A4A4B');
+                        this.AddSheenShadow(x, y, tempdiv, 1, towerSheen, towerShadow);
                         break;
                     case 's': // 's' = the enemy spawn location
                         tempdiv.classList.add('enemy-spawn-cell')
@@ -74,7 +92,7 @@ class Board {
                     case 'p': // 'p' = the path the enemies can take
                         tempdiv.classList.add('path-cell')
                         this.CheckConners(x, y, tempdiv);
-                        this.AddSheen(x, y, tempdiv, 'p', '#4E5252', '#343636');
+                        this.AddSheenShadow(x, y, tempdiv, 'p', pathSheen, pathShadow);
                         break;
                     case 'b': // 'b' = the players base
                         tempdiv.classList.add('player-base-cell')
@@ -104,9 +122,11 @@ class Board {
             for (let set of type) { // for each of the diffrent sets in the round type
                 isEmpty = true; // resets empty to true for each set
                 for (let cords of set) { // each of the indivual cordinates in set
-                    if (this.array[y + cords[1]][x + cords[0]] !== 0) { // based on where the x,y is then find it plus the cords and if that position on the board is not a zero
-                        isEmpty = false; // sets isEmpty to false
-                        break; // And breaks so it doesn't run anymore
+                    if (this.array[y + cords[1]]) {
+                        if (this.array[y + cords[1]][x + cords[0]] !== 0) { // based on where the x,y is then find it plus the cords and if that position on the board is not a zero
+                            isEmpty = false; // sets isEmpty to false
+                            break; // And breaks so it doesn't run anymore
+                        }
                     }
                 }
                 if (isEmpty) { // if all the spots are empty meaning we can round the conners
@@ -132,11 +152,18 @@ class Board {
         } // thats
     } // crazy
 
-    AddSheen (x, y, elem, lookFor, sheen, shadow) {
-        if (!(this.array[y][x - 1] === lookFor)) elem.style.borderLeft   = sheenShadowBorder + sheen;
-        if (!(this.array[y - 1][x] === lookFor)) elem.style.borderTop    = sheenShadowBorder + sheen;
-        if (!(this.array[y + 1][x] === lookFor)) elem.style.borderBottom = sheenShadowBorder + shadow;
-        if (!(this.array[y][x + 1] === lookFor)) elem.style.borderRight  = sheenShadowBorder + shadow;
+    // ██╗░░██╗███████╗██████╗░███████╗
+    // ██║░░██║██╔════╝██╔══██╗██╔════╝
+    // ███████║█████╗░░██████╔╝█████╗░░
+    // ██╔══██║██╔══╝░░██╔══██╗██╔══╝░░
+    // ██║░░██║███████╗██║░░██║███████╗
+    // ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝
+
+    AddSheenShadow (x, y, elem, lookFor, sheen, shadow) {
+        if (this.array[y][x - 1] !== lookFor) elem.style.borderLeft   = sheenShadowBorder + sheen; 
+        if (this.array[y - 1][x] !== lookFor) elem.style.borderTop    = sheenShadowBorder + sheen; 
+        if (this.array[y + 1][x] !== lookFor) elem.style.borderBottom = sheenShadowBorder + shadow;
+        if (this.array[y][x + 1] !== lookFor) elem.style.borderRight  = sheenShadowBorder + shadow;
     }
 }
 
@@ -156,11 +183,11 @@ window.addEventListener('resize', () => {
 
 class Camera {
     constructor (boardHTML, boardArray) {
-        this.board = boardHTML;
-        this.array = boardArray;
-        this.width =  boardHTML.offsetWidth;
+        this.board  = boardHTML;
+        this.array  = boardArray;
+        this.width  = boardHTML.offsetWidth;
         this.height = boardHTML.offsetHeight;
-        this.scale = 1;
+        this.scale  = 1;
 
         this.Keys();
     }
@@ -172,20 +199,21 @@ class Camera {
             if (!press.includes(e.key)) {
                 press.push(e.key);
             }
-            if (press.includes('w') && Number(this.board.style.top.replace('px', '')) > 0 - this.height / this.array.length) {
-                this.board.style.top  = Number(this.board.style.top.replace('px', '')) - 10 + 'px' 
-            } else if (press.includes('s') && Number(this.board.style.top.replace('px', '')) < window.innerHeight - this.height + this.height / this.array.length) {
-                this.board.style.top  = Number(this.board.style.top.replace('px', '')) + 10 + 'px' 
+
+            if (press.includes('w') && Number(this.board.style.top.replace('px', '')) > (0 - this.height / this.array.length)) {
+                this.board.style.top  = Number(this.board.style.top.replace('px', '')) - cameraSpeed + 'px' 
+            } else if (press.includes('s') && Number(this.board.style.top.replace('px', '')) < window.innerHeight - this.height / this.array.length) {
+                this.board.style.top  = Number(this.board.style.top.replace('px', '')) + cameraSpeed + 'px' 
             }    
             if (press.includes('a') && Number(this.board.style.left.replace('px', '')) > 0 - this.width / this.array[0].length) {
-                this.board.style.left = Number(this.board.style.left.replace('px', '')) - 10 + 'px';
-            } else if (press.includes('d') && Number(this.board.style.left.replace('px', '')) < window.innerWidth - this.width + this.width / this.array[0].length) {
-                this.board.style.left = Number(this.board.style.left.replace('px', '')) + 10 + 'px';
+                this.board.style.left = Number(this.board.style.left.replace('px', '')) - cameraSpeed + 'px';
+            } else if (press.includes('d') && Number(this.board.style.left.replace('px', '')) < window.innerWidth - this.width / this.array[0].length) {
+                this.board.style.left = Number(this.board.style.left.replace('px', '')) + cameraSpeed + 'px';
             }
-            if (press.includes('q') && this.scale < 2) {
+            if (press.includes('q') && this.scale < zoomMax) {
                 this.board.style.transform = `scale(${this.scale}, ${this.scale})`
                 this.scale += 0.1;
-            } else if (press.includes('e') && this.scale > 0.5) {
+            } else if (press.includes('e') && this.scale > zoomMin) {
                 this.board.style.transform = `scale(${this.scale}, ${this.scale})`
                 this.scale -= 0.1;
             }
@@ -198,3 +226,16 @@ class Camera {
 }
 
 let camera = new Camera (boardHTML, classicSmall.map);
+
+// ████████╗░█████╗░░██╗░░░░░░░██╗███████╗██████╗░░██████╗
+// ╚══██╔══╝██╔══██╗░██║░░██╗░░██║██╔════╝██╔══██╗██╔════╝
+// ░░░██║░░░██║░░██║░╚██╗████╗██╔╝█████╗░░██████╔╝╚█████╗░
+// ░░░██║░░░██║░░██║░░████╔═████║░██╔══╝░░██╔══██╗░╚═══██╗
+// ░░░██║░░░╚█████╔╝░░╚██╔╝░╚██╔╝░███████╗██║░░██║██████╔╝
+// ░░░╚═╝░░░░╚════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚═╝░░╚═╝╚═════╝░
+
+class Tower {
+    constructor (type) {
+
+    }
+}
