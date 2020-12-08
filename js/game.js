@@ -39,13 +39,15 @@ let boardHTML = document.getElementById('board');
 // The following is a very basic board and is named acordingly.
 let classicSmall = {
     map : [
-        [ 0 ,  0 ,  1 ,  1 ,  1 ,  0 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
-        [ 0 , 's', 'p', 'p', 'p', 'p',  0 ], // 1 stands for a spot that towers can be placed on.
-        [ 0 ,  0 ,  1 ,  1 ,  1 , 'p',  1 ], // s stands for the enemy spawing spot
-        [ 0 , 'p', 'p', 'p', 'p', 'p',  1 ], // b stands for your base, if an enemy reaches here you lose life.
-        [ 0 , 'p',  1 ,  1,   1 ,  0 ,  0 ], 
-        [ 1 , 'p', 'p', 'p', 'p', 'b',  0 ],
-        [ 1 ,  1 ,  0 ,  1 ,  1 ,  0 ,  0 ],
+        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
+        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 ,  0 ,  0 ,  0 ], // 0 Stands for nothing, or a blank space that nothing can be placed on.
+        [ 0 ,  0 , 's', 'p', 'p', 'p', 'p',  0 ,  0 ], // 1 stands for a spot that towers can be placed on.
+        [ 0 ,  0 ,  0 ,  1 ,  1 ,  1 , 'p',  1 ,  0 ], // s stands for the enemy spawing spot
+        [ 0 ,  0 , 'p', 'p', 'p', 'p', 'p',  1 ,  0 ], // b stands for your base, if an enemy reaches here you lose life.
+        [ 0 ,  0 , 'p',  1 ,  1,   1 ,  0 ,  0 ,  0 ], 
+        [ 0 ,  1 , 'p', 'p', 'p', 'p', 'b',  0 ,  0 ],
+        [ 0 ,  1 ,  1 ,  0 ,  1 ,  1 ,  0 ,  0 ,  0 ],
+        [ 0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ,  0 ],
     ],
 
     waves : [
@@ -122,11 +124,9 @@ class Board {
             for (let set of type) { // for each of the diffrent sets in the round type
                 isEmpty = true; // resets empty to true for each set
                 for (let cords of set) { // each of the indivual cordinates in set
-                    if (this.array[y + cords[1]]) {
-                        if (this.array[y + cords[1]][x + cords[0]] !== 0) { // based on where the x,y is then find it plus the cords and if that position on the board is not a zero
-                            isEmpty = false; // sets isEmpty to false
-                            break; // And breaks so it doesn't run anymore
-                        }
+                    if (this.array[y + cords[1]][x + cords[0]] !== 0) { // based on where the x,y is then find it plus the cords and if that position on the board is not a zero
+                        isEmpty = false; // sets isEmpty to false
+                        break; // And breaks so it doesn't run anymore
                     }
                 }
                 if (isEmpty) { // if all the spots are empty meaning we can round the conners
@@ -151,13 +151,6 @@ class Board {
             } // brakets
         } // thats
     } // crazy
-
-    // ██╗░░██╗███████╗██████╗░███████╗
-    // ██║░░██║██╔════╝██╔══██╗██╔════╝
-    // ███████║█████╗░░██████╔╝█████╗░░
-    // ██╔══██║██╔══╝░░██╔══██╗██╔══╝░░
-    // ██║░░██║███████╗██║░░██║███████╗
-    // ╚═╝░░╚═╝╚══════╝╚═╝░░╚═╝╚══════╝
 
     AddSheenShadow (x, y, elem, lookFor, sheen, shadow) {
         if (this.array[y][x - 1] !== lookFor) elem.style.borderLeft   = sheenShadowBorder + sheen; 
@@ -200,14 +193,14 @@ class Camera {
                 press.push(e.key);
             }
 
-            if (press.includes('w') && Number(this.board.style.top.replace('px', '')) > (0 - this.height / this.array.length)) {
+            if (press.includes('w') && Number(this.board.style.top.replace('px', '')) > 0 - this.height / 2) {
                 this.board.style.top  = Number(this.board.style.top.replace('px', '')) - cameraSpeed + 'px' 
-            } else if (press.includes('s') && Number(this.board.style.top.replace('px', '')) < window.innerHeight - this.height / this.array.length) {
+            } else if (press.includes('s') && Number(this.board.style.top.replace('px', '')) < window.innerHeight - this.height / 2) {
                 this.board.style.top  = Number(this.board.style.top.replace('px', '')) + cameraSpeed + 'px' 
             }    
-            if (press.includes('a') && Number(this.board.style.left.replace('px', '')) > 0 - this.width / this.array[0].length) {
+            if (press.includes('a') && Number(this.board.style.left.replace('px', '')) > 0 - this.width / 2) {
                 this.board.style.left = Number(this.board.style.left.replace('px', '')) - cameraSpeed + 'px';
-            } else if (press.includes('d') && Number(this.board.style.left.replace('px', '')) < window.innerWidth - this.width / this.array[0].length) {
+            } else if (press.includes('d') && Number(this.board.style.left.replace('px', '')) < window.innerWidth - this.width / 2) {
                 this.board.style.left = Number(this.board.style.left.replace('px', '')) + cameraSpeed + 'px';
             }
             if (press.includes('q') && this.scale < zoomMax) {
@@ -234,8 +227,13 @@ let camera = new Camera (boardHTML, classicSmall.map);
 // ░░░██║░░░╚█████╔╝░░╚██╔╝░╚██╔╝░███████╗██║░░██║██████╔╝
 // ░░░╚═╝░░░░╚════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚═╝░░╚═╝╚═════╝░
 
+towers = document.getElementsByClassName('tower-cell');
+for (tow of towers) {
+    tow.addEventListener ('onclick', menu) 
+}
+
 class Tower {
     constructor (type) {
-
+        this.type = type;
     }
 }
