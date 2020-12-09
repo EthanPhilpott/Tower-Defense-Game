@@ -30,31 +30,31 @@ const pathShadow  = root.getPropertyValue('--path-shadow' );
 
 const enemySettings = {
     basic : {
-        html    : MakeHtml('enemy', 'circle', 'blue', cellSizeWithoutPixels / 5),
+        html    : MakeHtmlEnemy('circle', 'blue', cellSizeWithoutPixels / 5),
         health  : 10   ,
         speed   : 1    ,
         airborn : false,
     },
     fast : {
-        html    : MakeHtml('enemy', 'triangle', 'blue', cellSizeWithoutPixels / 5),
+        html    : MakeHtmlEnemy('triangle', 'blue', cellSizeWithoutPixels / 5),
         health  : 5    ,
         speed   : 2    ,
         airborn : false,
     },
     strong : {
-        html    : MakeHtml('enemy', 'square', 'blue', cellSizeWithoutPixels / 5),
+        html    : MakeHtmlEnemy('square', 'blue', cellSizeWithoutPixels / 5),
         health  : 20   ,
         speed   : .5   ,
         airborn : false,
     },
     flying : {
-        html    : MakeHtml('enemy', 'cross', 'blue', cellSizeWithoutPixels / 5),
+        html    : MakeHtmlEnemy('cross', 'blue', cellSizeWithoutPixels / 5),
         health  : 10  ,
         speed   : 1   ,
         airborn : true,
     },
     boss : {
-        html    : MakeHtml('enemy', 'cross', 'blue', cellSizeWithoutPixels / 2.5),
+        html    : MakeHtmlEnemy('cross', 'blue', cellSizeWithoutPixels / 2.5),
         health  : 100  ,
         speed   : .25  ,
         airborn : false,
@@ -280,7 +280,36 @@ class Tower {
     }
 }
 
-// Enemys
+// ███████╗███╗░░██╗███████╗███╗░░░███╗██╗░░░██╗
+// ██╔════╝████╗░██║██╔════╝████╗░████║╚██╗░██╔╝
+// █████╗░░██╔██╗██║█████╗░░██╔████╔██║░╚████╔╝░
+// ██╔══╝░░██║╚████║██╔══╝░░██║╚██╔╝██║░░╚██╔╝░░
+// ███████╗██║░╚███║███████╗██║░╚═╝░██║░░░██║░░░
+// ╚══════╝╚═╝░░╚══╝╚══════╝╚═╝░░░░░╚═╝░░░╚═╝░░░
+
+MakeHtmlEnemy (shape, color, size) {
+    let enemy = document.createElement('div'); 
+    let es    = enemy.style;
+    es.backgroundColor = color;
+
+    switch (shape) {
+        case 'square':
+            
+            break;
+        case 'circle':
+
+            break;
+        case 'triangle':
+
+            break;
+        case 'square':
+
+            break;
+        case 'square':
+
+            break;
+    }
+}
 
 class Enemy {
     constructor (type, health) {
@@ -307,7 +336,12 @@ class Enemy {
     }
 }
 
-// Projectiles
+// ██████╗░██████╗░░█████╗░░░░░░██╗███████╗░█████╗░████████╗██╗██╗░░░░░███████╗░██████╗
+// ██╔══██╗██╔══██╗██╔══██╗░░░░░██║██╔════╝██╔══██╗╚══██╔══╝██║██║░░░░░██╔════╝██╔════╝
+// ██████╔╝██████╔╝██║░░██║░░░░░██║█████╗░░██║░░╚═╝░░░██║░░░██║██║░░░░░█████╗░░╚█████╗░
+// ██╔═══╝░██╔══██╗██║░░██║██╗░░██║██╔══╝░░██║░░██╗░░░██║░░░██║██║░░░░░██╔══╝░░░╚═══██╗
+// ██║░░░░░██║░░██║╚█████╔╝╚█████╔╝███████╗╚█████╔╝░░░██║░░░██║███████╗███████╗██████╔╝
+// ╚═╝░░░░░╚═╝░░╚═╝░╚════╝░░╚════╝░╚══════╝░╚════╝░░░░╚═╝░░░╚═╝╚══════╝╚══════╝╚═════╝░
 
 class Projectile {
     constructor (projHtml, startx, starty, angle, speed) {
