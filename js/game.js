@@ -12,14 +12,54 @@ let root = getComputedStyle(document.documentElement)
 // Borders
 
 const roundAmt          = root.getPropertyValue('--cell-round-amount');
-const sheenShadowBorder = root.getPropertyValue('--cell-border'      )
+const sheenShadowBorder = root.getPropertyValue('--cell-border'      );
+
+// Cells
+
+const cellSize              = root.getPropertyValue('--cell-size');
+const cellSizeWithoutPixels = root.getPropertyValue('--cell-size').replace('px', '');
 
 // Colors
 
-const towerSheen  = root.getPropertyValue('--tower-sheen'     );
-const towerShadow = root.getPropertyValue('--tower-shadow'    );
-const pathSheen   = root.getPropertyValue('--path-sheen'      );
-const pathShadow  = root.getPropertyValue('--path-shadow'     );
+const towerSheen  = root.getPropertyValue('--tower-sheen' );
+const towerShadow = root.getPropertyValue('--tower-shadow');
+const pathSheen   = root.getPropertyValue('--path-sheen'  );
+const pathShadow  = root.getPropertyValue('--path-shadow' );
+
+// Enemys
+
+const enemySettings = {
+    basic : {
+        html    : MakeHtml('enemy', 'circle', 'blue', cellSizeWithoutPixels / 5),
+        health  : 10   ,
+        speed   : 1    ,
+        airborn : false,
+    },
+    fast : {
+        html    : MakeHtml('enemy', 'triangle', 'blue', cellSizeWithoutPixels / 5),
+        health  : 5    ,
+        speed   : 2    ,
+        airborn : false,
+    },
+    strong : {
+        html    : MakeHtml('enemy', 'square', 'blue', cellSizeWithoutPixels / 5),
+        health  : 20   ,
+        speed   : .5   ,
+        airborn : false,
+    },
+    flying : {
+        html    : MakeHtml('enemy', 'cross', 'blue', cellSizeWithoutPixels / 5),
+        health  : 10  ,
+        speed   : 1   ,
+        airborn : true,
+    },
+    boss : {
+        html    : MakeHtml('enemy', 'cross', 'blue', cellSizeWithoutPixels / 2.5),
+        health  : 100  ,
+        speed   : .25  ,
+        airborn : false,
+    }
+}
 
 // Other
 
@@ -227,13 +267,65 @@ let camera = new Camera (boardHTML, classicSmall.map);
 // ░░░██║░░░╚█████╔╝░░╚██╔╝░╚██╔╝░███████╗██║░░██║██████╔╝
 // ░░░╚═╝░░░░╚════╝░░░░╚═╝░░░╚═╝░░╚══════╝╚═╝░░╚═╝╚═════╝░
 
-towers = document.getElementsByClassName('tower-cell');
-for (tow of towers) {
+let towers = document.getElementsByClassName('tower-cell');
+for (let tow of towers) {
     tow.addEventListener ('onclick', menu) 
 }
+
+function menu () {}
 
 class Tower {
     constructor (type) {
         this.type = type;
+    }
+}
+
+// Enemys
+
+class Enemy {
+    constructor (type, health) {
+        this.type   = type;
+        this.health = health;
+        this.speed  = 0;
+        this.html   = document.createElement('div')
+    }
+
+    SetHtml () {
+        switch (this.type) {
+            case "basic":
+                break;
+            case "fast":
+                this.health /= 2
+                this.speed   = 
+                break;
+            case
+        }
+    }
+
+    Delete () {
+        this.html.remove();
+    }
+}
+
+// Projectiles
+
+class Projectile {
+    constructor (projHtml, startx, starty, angle, speed) {
+        this.type   = type;
+        this.x      = startx;
+        this.y      = starty;
+        this.angle  = angle;
+        this.speed  = speed;
+        this.html   = projHtml;
+    }
+
+    ColideDetect () {
+        if (this.x) {
+
+        }
+    }
+
+    Delete () {
+        this.html.remove();
     }
 }

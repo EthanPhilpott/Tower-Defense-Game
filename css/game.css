@@ -19,6 +19,9 @@
     /* Border */
     --cell-round-amount : 15px;
     --cell-border       : solid 5px;
+
+    /* Grid */
+    --cell-size         : 100px
 }
 
 /* Main Styles */
@@ -42,8 +45,8 @@ article {
 }
 
 .board * {
-    width: 100px;
-    height: 100px;
+    width: var(--cell-size);
+    height: var(--cell-size);
 }
 
 .empty-cell {
